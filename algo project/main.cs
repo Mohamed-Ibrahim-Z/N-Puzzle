@@ -26,7 +26,7 @@ namespace algo_project
         
         static void Main(string[] args)
         {
-            string[] read = System.IO.File.ReadAllLines("Sample Test/Solvable Puzzles/8 Puzzle (3).txt");
+            string[] read = System.IO.File.ReadAllLines("Complete Test/solvable puzzles/Manhattan Only/15 Puzzle 5.txt");
             int n = int.Parse(read[0]);
             int[,] puzzle = new int[n, n];
             for (int i = 0; i < n; i++)
@@ -41,41 +41,57 @@ namespace algo_project
 
             PrQueue open = new PrQueue();
             HashSet<int> closed = new HashSet<int>();
-            Node node = new Node(puzzle, 0, 0);
-            open.Enqueue(node);
-            Board board = new Board(node, n);
-            if(!board.isSolvable())
+            Node node = new Node(puzzle, int.MaxValue, 0,null);
+            
+            List<Node> Sol = new List<Node>();
+            int level = 0;
+            if(!node.isSolvable())
             {
                 Console.WriteLine("Unsolvable");
                 return;
-            }
-
+            }      
+            open.Enqueue(node);
+            //node.PrintBoard();
             while (open.Count() != 0)
             {
                 Node current = open.Dequeue();
-                Board board1 = new Board(current, n);
-                board1.PrintBoard();
-                if (board1.isGoal())
+                if (current.isGoal())
                 {
-                    Console.WriteLine(current.level);
+                    level = current.level;
+                    while (current.parent != null)
+                    {
+                        Sol.Add(current);
+                        current = current.parent;
+                        
+                    }
                     break;
                 }
                 
                 closed.Add(hashFunctionFor2DArr(current.data));
-                board1.FindPossibleMoves();
-                foreach(Node child in board1.children)
+                current.FindPossibleMoves();
+                foreach(Node child in current.children)
                 {
 
                     if (!closed.Contains(hashFunctionFor2DArr(child.data)))
-                    {
                         open.Enqueue(child);
-                    }
-                    else
-                        continue;
+                    
+                    
                 }
             }
+            Console.WriteLine(level);
+            //for (int i = level - 1; i >= 0; i--)
+            //{
+            //    for (int j = 0; j < Sol[i].data.GetLength(0); j++)
+            //    {
+            //        for (int k = 0; k < Sol[i].data.GetLength(0); k++)
+            //        {
+            //            Console.Write(Sol[i].data[j, k] + " ");
 
-
+            //        }
+            //        Console.WriteLine();
+            //    }
+            //    Console.WriteLine();
+            //}
 
         }
     }
