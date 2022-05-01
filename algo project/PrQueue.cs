@@ -136,8 +136,6 @@ namespace algo_project
 
         private void FakeSwap(Tuple<int, int> zero, Tuple<int, int> tile)
         {
-            //int h = -1;
-            int m = -1;
             try
             {
                 int temp = data[zero.Item1, zero.Item2];
@@ -145,9 +143,9 @@ namespace algo_project
                 data[tile.Item1, tile.Item2] = temp;
 
 
-                //h = Hamming();
-                m = Manhattan();
-                children.Add(new Node(data, m + level + 1, level + 1, this));
+                Hamming();
+                //Manhattan();
+                children.Add(new Node(data, Hamming() + level + 1, level + 1, this));
                 int temp1 = data[zero.Item1, zero.Item2];
                 data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
                 data[tile.Item1, tile.Item2] = temp1;
@@ -163,9 +161,12 @@ namespace algo_project
 
             FakeSwap(zero, new Tuple<int, int>(zero.Item1 - 1, zero.Item2));
 
+
             FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 + 1));
 
+
             FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 - 1));
+
 
 
 
@@ -185,7 +186,20 @@ namespace algo_project
 
         }
 
-
+        public bool isSol()
+        {
+            for(int i =0;i<size;i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (data[i, j] != target[i, j])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
 
     }
     internal class PrQueue

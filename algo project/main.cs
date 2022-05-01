@@ -26,7 +26,7 @@ namespace algo_project
         
         static void Main(string[] args)
         {
-            string[] read = System.IO.File.ReadAllLines("Complete Test/solvable puzzles/Manhattan Only/15 Puzzle 5.txt");
+            string[] read = System.IO.File.ReadAllLines("Sample Test/Solvable Puzzles/8 Puzzle (2).txt");
             int n = int.Parse(read[0]);
             int[,] puzzle = new int[n, n];
             for (int i = 0; i < n; i++)
@@ -52,9 +52,16 @@ namespace algo_project
             }      
             open.Enqueue(node);
             //node.PrintBoard();
+
+            if (node.isSol())
+                return;
+
+            
             while (open.Count() != 0)
             {
+                
                 Node current = open.Dequeue();
+                //current.PrintBoard();
                 if (current.isGoal())
                 {
                     level = current.level;
