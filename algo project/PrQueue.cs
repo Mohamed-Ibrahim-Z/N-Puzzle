@@ -11,13 +11,12 @@ namespace algo_project
         Tuple<int, int> zero;
         public List<Node> children;
         public Node parent;
-        public int[,] target;
         public int[,] data;
         public int cost;
         public int level;
         public int size;
 
-
+        
         public Node(int[,] d, int cost, int level, Node parent)
         {
             this.size = d.GetLength(0);
@@ -31,24 +30,18 @@ namespace algo_project
         
         private void InitBoard(int[,] d)
         {
-            int tile = 1;
-            target = new int[size, size];
             data = new int[size, size];
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if (i == size - 1 && j == size - 1)
-                    {
-                        tile = 0;
-                    }
+                    
                     data[i, j] = d[i, j];
                     if (isZero(i,j))
                     {
                         zero = new Tuple<int, int>(i, j);
                     }
-                    target[i, j] = tile;
-                    tile++;
+                    
                 }
             }
         }
@@ -98,7 +91,7 @@ namespace algo_project
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if (data[i, j] != target[i, j] && data[i, j] != 0)
+                    if (data[i, j] != i * size + j +1 && data[i, j] != 0)
                     {
                         count++;
                     }
@@ -108,14 +101,14 @@ namespace algo_project
 
         }
 
-        int Manhattan()
+        public int Manhattan()
         {
             int count = 0;
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if (data[i, j] != target[i, j] && data[i, j] != 0)
+                    if (data[i, j] != i * size + j + 1 && data[i, j] != 0)
                     {
                         int x = (data[i, j] - 1) / size;
                         int y = (data[i, j] - 1) % size;
@@ -136,41 +129,42 @@ namespace algo_project
 
         private void FakeSwap(Tuple<int, int> zero, Tuple<int, int> tile)
         {
-            try
-            {
-                int temp = data[zero.Item1, zero.Item2];
-                data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
-                data[tile.Item1, tile.Item2] = temp;
+
+            data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
+            data[tile.Item1, tile.Item2] = 0;
+
+            children.Add(new Node(data, Manhattan() + level + 1, level + 1, this));
+            
+            data[tile.Item1, tile.Item2] = data[zero.Item1, zero.Item2];
+            data[zero.Item1, zero.Item2] = 0;
 
 
-                Hamming();
-                //Manhattan();
-                children.Add(new Node(data, Hamming() + level + 1, level + 1, this));
-                int temp1 = data[zero.Item1, zero.Item2];
-                data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
-                data[tile.Item1, tile.Item2] = temp1;
-
-            }
-            catch (Exception) { }
-           
         }
 
         public void FindPossibleMoves()
         {
-            FakeSwap(zero, new Tuple<int, int>(zero.Item1 + 1, zero.Item2));
 
-            FakeSwap(zero, new Tuple<int, int>(zero.Item1 - 1, zero.Item2));
-
-
-            FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 + 1));
-
-
-            FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 - 1));
-
-
+            if (zero.Item1 < size - 1)
+            {
+                FakeSwap(zero, new Tuple<int, int>(zero.Item1 + 1, zero.Item2));
+            }
+            if (zero.Item1 > 0)
+            {
+                FakeSwap(zero, new Tuple<int, int>(zero.Item1 - 1, zero.Item2));
+            }
+            if (zero.Item2 < size - 1)
+            {
+                FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 + 1));
+            }
+            if (zero.Item2 > 0)
+            {
+                FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 - 1));
+            }
 
 
         }
+        
+        
 
         public void PrintBoard()
         {
@@ -186,20 +180,7 @@ namespace algo_project
 
         }
 
-        public bool isSol()
-        {
-            for(int i =0;i<size;i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    if (data[i, j] != target[i, j])
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
+        
 
     }
     internal class PrQueue
@@ -214,19 +195,14 @@ namespace algo_project
         {
             queue.Add(n);
             int i = queue.Count - 1;
-            while (i > 0)
+            while (i > 0 && queue[i].cost < queue[(i - 1) / 2].cost)
             {
-                if (queue[i].cost < queue[(i - 1) / 2].cost)
-                {
-                    Node temp = queue[i];
-                    queue[i] = queue[(i - 1) / 2];
-                    queue[(i - 1) / 2] = temp;
-                    i = (i - 1) / 2;
-                }
-                else
-                {
-                    break;
-                }
+                
+                Node temp = queue[i];
+                queue[i] = queue[(i - 1) / 2];
+                queue[(i - 1) / 2] = temp;
+                i = (i - 1) / 2;
+                
             }
         }
         public Node Dequeue()

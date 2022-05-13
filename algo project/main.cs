@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,12 +22,16 @@ namespace algo_project
                 hash *= 7;
             }
             return hash;
+
         }
 
-        
+
+
         static void Main(string[] args)
         {
-            string[] read = System.IO.File.ReadAllLines("Sample Test/Solvable Puzzles/8 Puzzle (2).txt");
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            string[] read = System.IO.File.ReadAllLines("Complete Test/Solvable puzzles/Manhattan Only/15 Puzzle 1.txt");
             int n = int.Parse(read[0]);
             int[,] puzzle = new int[n, n];
             for (int i = 0; i < n; i++)
@@ -42,7 +47,8 @@ namespace algo_project
             PrQueue open = new PrQueue();
             HashSet<int> closed = new HashSet<int>();
             Node node = new Node(puzzle, int.MaxValue, 0,null);
-            
+            node.cost = node.Manhattan();
+
             List<Node> Sol = new List<Node>();
             int level = 0;
             if(!node.isSolvable())
@@ -53,9 +59,6 @@ namespace algo_project
             open.Enqueue(node);
             //node.PrintBoard();
 
-            if (node.isSol())
-                return;
-
             
             while (open.Count() != 0)
             {
@@ -65,12 +68,12 @@ namespace algo_project
                 if (current.isGoal())
                 {
                     level = current.level;
-                    while (current.parent != null)
-                    {
-                        Sol.Add(current);
-                        current = current.parent;
+                    //while (current.parent != null)
+                    //{
+                    //    Sol.Add(current);
+                    //    current = current.parent;
                         
-                    }
+                    //}
                     break;
                 }
                 
@@ -86,6 +89,8 @@ namespace algo_project
                 }
             }
             Console.WriteLine(level);
+            stopwatch.Stop();
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
             //for (int i = level - 1; i >= 0; i--)
             //{
             //    for (int j = 0; j < Sol[i].data.GetLength(0); j++)
