@@ -8,26 +8,38 @@ namespace algo_project
 {
     public class Node
     {
+        DistanceFunction distanceFunction;
         Tuple<int, int> zero;
-        public List<Node> children;
         public Node parent;
         public int[,] data;
         public int cost;
         public int level;
         public int size;
+        public int hash;
 
-        
-        public Node(int[,] d, int cost, int level, Node parent)
+
+        public Node(int[,] d, int size, DistanceFunction distanceFunction)
         {
-            this.size = d.GetLength(0);
+            this.size = size;
             InitBoard(d);
-            this.parent = parent; 
-            this.cost = cost;
-            this.level = level;
-            this.parent = parent;
-            children = new List<Node>();
+            this.parent = null;
+            this.distanceFunction = distanceFunction;
+            this.cost = calcDistance(distanceFunction);
+            this.level = 0;
+            this.hash = Solver.hashFunctionFor2DArr(d,size);
         }
-        
+        public Node(Node parent,int hash,int cost)
+        {
+            this.size = parent.size;
+            InitBoard(parent.data);
+            this.parent = parent;
+            this.distanceFunction = parent.distanceFunction;
+            this.cost = cost;
+            this.level = parent.level + 1;
+            this.parent = parent;
+            this.hash = hash;
+        }
+
         private void InitBoard(int[,] d)
         {
             data = new int[size, size];
@@ -35,30 +47,21 @@ namespace algo_project
             {
                 for (int j = 0; j < size; j++)
                 {
-                    
                     data[i, j] = d[i, j];
-                    if (isZero(i,j))
+                    if (data[i, j] == 0)
                     {
                         zero = new Tuple<int, int>(i, j);
                     }
-                    
+
                 }
             }
         }
-
-        private bool isZero(int i,int j)
-        {
-            if (data[i, j] == 0)
-                return true;
-            return false;
-        }
-        
+      
         public bool isSolvable()
         {
             int inversions = 0;
             int blankLine = size - zero.Item1;
-            int[] checkBoard = new int[size * size];
-            checkBoard = data.Cast<int>().ToArray();
+            int[] checkBoard = data.Cast<int>().ToArray();
             for (int i = 0; i < size * size; i++)
             {
                 for (int j = i + 1; j < size * size; j++)
@@ -83,15 +86,21 @@ namespace algo_project
                     return false;
             }
         }
-
-        int Hamming()
+        public int calcDistance(DistanceFunction distanceFunction)
+        {
+            if (distanceFunction == DistanceFunction.HAMMING)
+                return Hamming();
+            else
+                return Manhattan();
+        }
+        private int Hamming()
         {
             int count = 0;
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if (data[i, j] != i * size + j +1 && data[i, j] != 0)
+                    if (data[i, j] != i * size + j + 1 && data[i, j] != 0)
                     {
                         count++;
                     }
@@ -100,8 +109,8 @@ namespace algo_project
             return count;
 
         }
-
-        public int Manhattan()
+        
+        private int Manhattan()
         {
             int count = 0;
             for (int i = 0; i < size; i++)
@@ -119,52 +128,119 @@ namespace algo_project
             return count;
         }
 
-        public bool isGoal()
-        {
-            if (cost == level)
-                return true;
 
-            return false;
+        public void getChilderen(DistanceFunction distanceFunction, Tuple<int, int> zero, Tuple<int, int> tile)
+        {
+            if (distanceFunction == DistanceFunction.HAMMING)
+                GetHammingChild(zero, tile);
+            else
+                GetManhattanChild(zero, tile);
         }
-
-        private void FakeSwap(Tuple<int, int> zero, Tuple<int, int> tile)
+        
+        private void GetHammingChild(Tuple<int, int> zero, Tuple<int, int> tile)
         {
-
             data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
-            data[tile.Item1, tile.Item2] = 0;
 
-            children.Add(new Node(data, Manhattan() + level + 1, level + 1, this));
-            
+            // if moved a correct tile + 1
+            int correctX = (data[tile.Item1, tile.Item2] - 1) / size;
+            int correctY = (data[tile.Item1, tile.Item2] - 1) % size;
+            data[tile.Item1, tile.Item2] = 0;
+            int hash;
+            Node node = new Node(this, this.hash, -1);
+            if (correctX == tile.Item1 && correctY == tile.Item2)
+            {
+                hash = Solver.hashFunctionFor2DArr(data, size);
+                if (!Solver.closed.Contains(hash))
+                {
+                    node = new Node(this, hash, cost  + 2);
+                   Solver.open.Enqueue(new Node(this, hash, cost  + 2));
+                   
+                }
+
+            }
+            //if moved a wrong tile to correct tile -1
+            else if(correctX == zero.Item1 && correctY == zero.Item2)
+            {
+
+                hash = Solver.hashFunctionFor2DArr(data, size);
+                if (!Solver.closed.Contains(hash))
+                {
+                    node = new Node(this, hash, cost );
+                    Solver.open.Enqueue(new Node(this, hash, cost ));
+
+                }
+
+            }
+            // if moved a wrong tile to wrong tile ------------
+            else
+            {
+
+                hash = Solver.hashFunctionFor2DArr(data, size);
+                if (!Solver.closed.Contains(hash))
+                {
+                    node = new Node(this, hash, cost  +1);
+
+                    Solver.open.Enqueue(new Node(this, hash, cost  + 1));
+
+                }
+
+            }
+
             data[tile.Item1, tile.Item2] = data[zero.Item1, zero.Item2];
             data[zero.Item1, zero.Item2] = 0;
 
 
         }
 
-        public void FindPossibleMoves()
+        private void GetManhattanChild(Tuple<int, int> zero, Tuple<int, int> tile)
+        {
+            data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
+            int x = (data[tile.Item1, tile.Item2] - 1) / size;
+            int y = (data[tile.Item1, tile.Item2] - 1) % size;
+
+            int x1 = (data[zero.Item1, zero.Item2] - 1) / size;
+            int y1 = (data[zero.Item1, zero.Item2] - 1) % size;
+            int costWithZ1 = Math.Abs(x1 - zero.Item1) + Math.Abs(y1 - zero.Item2) +
+                cost - Math.Abs(x - tile.Item1) - Math.Abs(y - tile.Item2) - level;
+            
+            data[tile.Item1, tile.Item2] = 0;
+
+            int hash = Solver.hashFunctionFor2DArr(data, size);
+            if (!Solver.closed.Contains(hash))
+            {
+                Solver.open.Enqueue(new Node(this, hash, costWithZ1 + level + 1));
+            }
+            data[tile.Item1, tile.Item2] = data[zero.Item1, zero.Item2];
+            data[zero.Item1, zero.Item2] = 0;
+        }
+
+
+        
+
+        public void getPosibolChildren()
         {
 
             if (zero.Item1 < size - 1)
             {
-                FakeSwap(zero, new Tuple<int, int>(zero.Item1 + 1, zero.Item2));
+                getChilderen(distanceFunction,zero, new Tuple<int, int>(zero.Item1 + 1, zero.Item2));
             }
             if (zero.Item1 > 0)
             {
-                FakeSwap(zero, new Tuple<int, int>(zero.Item1 - 1, zero.Item2));
+                getChilderen(distanceFunction, zero, new Tuple<int, int>(zero.Item1 - 1, zero.Item2));
             }
             if (zero.Item2 < size - 1)
             {
-                FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 + 1));
+                getChilderen(distanceFunction, zero, new Tuple<int, int>(zero.Item1, zero.Item2 + 1));
             }
             if (zero.Item2 > 0)
             {
-                FakeSwap(zero, new Tuple<int, int>(zero.Item1, zero.Item2 - 1));
+                getChilderen(distanceFunction, zero, new Tuple<int, int>(zero.Item1, zero.Item2 - 1));
             }
 
 
         }
-        
-        
+
+
 
         public void PrintBoard()
         {
@@ -180,7 +256,7 @@ namespace algo_project
 
         }
 
-        
+
 
     }
     internal class PrQueue
@@ -195,42 +271,54 @@ namespace algo_project
         {
             queue.Add(n);
             int i = queue.Count - 1;
-            while (i > 0 && queue[i].cost < queue[(i - 1) / 2].cost)
+            while (i > 0)
             {
-                
-                Node temp = queue[i];
-                queue[i] = queue[(i - 1) / 2];
-                queue[(i - 1) / 2] = temp;
-                i = (i - 1) / 2;
-                
-            }
-        }
-        public Node Dequeue()
-        {
-            Node n = queue[0];
-            queue[0] = queue[queue.Count - 1];
-            queue.RemoveAt(queue.Count - 1);
-            int i = 0;
-            while (2 * i + 1 < queue.Count)
-            {
-                int j = 2 * i + 1;
-                if (j + 1 < queue.Count && queue[j + 1].cost < queue[j].cost)
-                {
-                    j++;
-                }
-                if (queue[i].cost > queue[j].cost)
+                int parent = (i - 1) / 2;
+                if (queue[i].cost < queue[parent].cost)
                 {
                     Node temp = queue[i];
-                    queue[i] = queue[j];
-                    queue[j] = temp;
-                    i = j;
+                    queue[i] = queue[parent];
+                    queue[parent] = temp;
+                    i = parent;
                 }
                 else
                 {
                     break;
                 }
             }
+        }
+        public Node Dequeue()
+        {
+            if (queue.Count == 0)
+            {
+                return null;
+            }
+            Node n = queue[0];
+            queue[0] = queue[queue.Count - 1];
+            queue.RemoveAt(queue.Count - 1);
+            MinHeapify(0);
             return n;
+        }
+        public void MinHeapify(int i)
+        {
+            int left = 2 * i + 1;
+            int right = 2 * i + 2;
+            int smallest = i;
+            if (left < queue.Count && queue[left].cost < queue[i].cost)
+            {
+                smallest = left;
+            }
+            if (right < queue.Count && queue[right].cost < queue[smallest].cost)
+            {
+                smallest = right;
+            }
+            if (smallest != i)
+            {
+                Node temp = queue[i];
+                queue[i] = queue[smallest];
+                queue[smallest] = temp;
+                MinHeapify(smallest);
+            }
         }
         public bool IsEmpty()
         {
@@ -240,6 +328,10 @@ namespace algo_project
         public int Count()
         {
             return queue.Count;
+        }
+        public Node Peek()
+        {
+            return queue[0];
         }
     }
 }
