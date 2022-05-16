@@ -146,13 +146,13 @@ namespace algo_project
             int correctY = (data[tile.Item1, tile.Item2] - 1) % size;
             data[tile.Item1, tile.Item2] = 0;
             int hash;
-            Node node = new Node(this, this.hash, -1);
+
+
             if (correctX == tile.Item1 && correctY == tile.Item2)
             {
                 hash = Solver.hashFunctionFor2DArr(data, size);
                 if (!Solver.closed.Contains(hash))
                 {
-                    node = new Node(this, hash, cost  + 2);
                    Solver.open.Enqueue(new Node(this, hash, cost  + 2));
                    
                 }
@@ -165,7 +165,6 @@ namespace algo_project
                 hash = Solver.hashFunctionFor2DArr(data, size);
                 if (!Solver.closed.Contains(hash))
                 {
-                    node = new Node(this, hash, cost );
                     Solver.open.Enqueue(new Node(this, hash, cost ));
 
                 }
@@ -178,7 +177,6 @@ namespace algo_project
                 hash = Solver.hashFunctionFor2DArr(data, size);
                 if (!Solver.closed.Contains(hash))
                 {
-                    node = new Node(this, hash, cost  +1);
 
                     Solver.open.Enqueue(new Node(this, hash, cost  + 1));
 
@@ -197,6 +195,8 @@ namespace algo_project
             data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
             int x = (data[tile.Item1, tile.Item2] - 1) / size;
             int y = (data[tile.Item1, tile.Item2] - 1) % size;
+
+
 
             int x1 = (data[zero.Item1, zero.Item2] - 1) / size;
             int y1 = (data[zero.Item1, zero.Item2] - 1) % size;

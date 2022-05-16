@@ -14,7 +14,7 @@ namespace algo_project
         static void Main(string[] args)
         {
 
-            string[] read = System.IO.File.ReadAllLines("Complete Test/Solvable puzzles/Manhattan & Hamming/9999 Puzzle.txt");
+            string[] read = System.IO.File.ReadAllLines("Complete Test/Solvable puzzles/Manhattan Only/15 Puzzle 5.txt");
             int n = int.Parse(read[0]);
             int[,] puzzle = new int[n, n];
             for (int i = 0; i < n; i++)
@@ -25,7 +25,7 @@ namespace algo_project
                     puzzle[i, j] = int.Parse(line[j]);
                 }
             }
-            Solver solver = new Solver(puzzle, n, DistanceFunction.HAMMING);
+            Solver solver = new Solver(puzzle, n, DistanceFunction.MANHATTEN);
 
             solver.Solve();
 

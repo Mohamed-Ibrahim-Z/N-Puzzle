@@ -97,6 +97,8 @@ namespace algo_project
                     }
                     break;
                 }
+                //current.PrintBoard();
+                //Console.WriteLine(current.cost);
                 closed.Add(hashFunctionFor2DArr(current.data, size));
                 current.getPosibolChildren();
             }
