@@ -103,11 +103,17 @@ namespace algo_project
                 current.getPosibolChildren();
             }
             if (size == 3)
+            {
+                Form1 gui = new Form1(result,this.puzzle,level);
                 printRes(result);
-
+                gui.ShowDialog();
+            }
             
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
             Console.WriteLine("# Of Moves: " + level);
+            //Clearing
+            open.Clear();
+            closed.Clear();
             return 0;
         }
     }

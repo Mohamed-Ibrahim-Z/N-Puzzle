@@ -333,5 +333,10 @@ namespace algo_project
         {
             return queue[0];
         }
+        public void Clear()
+        {
+            queue.Clear();
+            
+        }
     }
 }
