@@ -227,7 +227,7 @@ namespace algo_project
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.button10);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Solver";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);

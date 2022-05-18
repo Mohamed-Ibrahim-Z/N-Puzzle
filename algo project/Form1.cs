@@ -18,9 +18,8 @@ namespace algo_project
         List<int[,]> solution;
         int[,] intitialPazzle;
         Button[,] nums = new Button[3, 3];
-        int moves, clks = 0;
         string sec;
-        public Form1(List<int[,]> puzzles, int[,] inti, int moves,double seconds)
+        public Form1(List<int[,]> puzzles, int[,] inti, double seconds)
         {
             solution = puzzles;
             intitialPazzle = new int[3, 3];
@@ -33,7 +32,6 @@ namespace algo_project
                     }
                   
                 }
-            this.moves = moves;
             sec = Convert.ToInt32(seconds).ToString();
             solution.Reverse();
             InitializeComponent();
@@ -84,9 +82,11 @@ namespace algo_project
 
         }
 
-        private void button10_Click(object sender, EventArgs e)
+        private async void button10_Click(object sender, EventArgs e)
         {
-            showGuiAsync();
+            button11.Enabled = false;
+            button10.Enabled = false;
+            await showGuiAsync();
         }
 
         private void button11_Click(object sender, EventArgs e)

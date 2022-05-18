@@ -13,9 +13,10 @@ namespace algo_project
     {
 
 
-        public void ReadSampleTests()
-        {
-            string path = "Sample Test/";
+        DistanceFunction distanceFunction = DistanceFunction.MANHATTEN;
+    public void ReadSampleTests()
+     {
+            string path = "Sample Test/"; 
             Console.WriteLine("Choose if Solvable Or not");
             Console.WriteLine("1 -> for Solvable");
             Console.WriteLine("2 -> for Unsolvable");
@@ -26,6 +27,14 @@ namespace algo_project
                 case '1':
                     {
                         path += "Solvable Puzzles";
+                        Console.WriteLine("1 -> for Manhatten");
+                        Console.WriteLine("2 -> for Hamming");
+                        choice = (char)Console.ReadLine()[0];
+                        Console.WriteLine();
+                        if (choice == '1')
+                            distanceFunction = DistanceFunction.MANHATTEN;
+                        else if (choice == '2')
+                            distanceFunction = DistanceFunction.HAMMING;
                         break;
                     }
                 case '2':
@@ -33,9 +42,9 @@ namespace algo_project
                         path += "Unsolvable Puzzles";
                         break;
                     }
-            }
-            IterateOnFolder(path);
-        }
+            } 
+            IterateOnFolder(path);  //θ(S  * E(Log(V)))
+        } // Complexity  θ(1 +  IterateOnFolder )
         public void ReadCompleteTests()
         {
             string path = "Complete Test/";
@@ -44,7 +53,6 @@ namespace algo_project
             Console.WriteLine("2 -> for UnSolvable Puzzles");
             Console.WriteLine("3 -> for V.Large Test");
 
-            DistanceFunction distanceFunction = DistanceFunction.MANHATTEN;
             char choice = (char)Console.ReadLine()[0];
             switch (choice)
             {
@@ -58,7 +66,14 @@ namespace algo_project
                         if (choice == '1')
                         {
                             path += "Manhattan Only";
-                            distanceFunction = DistanceFunction.MANHATTEN;
+                            Console.WriteLine("1 -> for Manhatten");
+                            Console.WriteLine("2 -> for Hamming");
+                            choice = (char)Console.ReadLine()[0];
+                            Console.WriteLine();
+                            if (choice == '1')
+                                distanceFunction = DistanceFunction.MANHATTEN;
+                            else if (choice == '2')
+                                distanceFunction = DistanceFunction.HAMMING;                            
                         }
                         else if (choice == '2')
                         {
@@ -85,6 +100,14 @@ namespace algo_project
                     {
                         Console.WriteLine();
                         path += "V. Large test case/";
+                        Console.WriteLine("1 -> for Manhatten");
+                        Console.WriteLine("2 -> for Hamming");
+                        choice = (char)Console.ReadLine()[0];
+                        Console.WriteLine();
+                        if (choice == '1')
+                            distanceFunction = DistanceFunction.MANHATTEN;
+                        else if (choice == '2')
+                            distanceFunction = DistanceFunction.HAMMING;
                         break;
                     }
             }
@@ -118,12 +141,10 @@ namespace algo_project
                 {
                     Console.WriteLine(s[0]);
                 }
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                Solver solver = new Solver(puzzle, n, DistanceFunction.MANHATTEN);
-                solver.Solve();
+
+                Solver solver = new Solver(puzzle, n, distanceFunction);
+                solver.Solve(); // O(E Log (V))
                 
-                Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
                 Console.WriteLine();
             }
         }

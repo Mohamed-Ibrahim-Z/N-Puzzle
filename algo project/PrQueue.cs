@@ -17,7 +17,6 @@ namespace algo_project
         public int size;
         public int hash;
 
-
         public Node(int[,] d, int size, DistanceFunction distanceFunction)
         {
             this.size = size;
@@ -217,7 +216,7 @@ namespace algo_project
 
         
 
-        public void getPosibolChildren()
+        public void getPossibleChildren()
         {
 
             if (zero.Item1 < size - 1)
