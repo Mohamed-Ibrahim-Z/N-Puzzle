@@ -109,7 +109,7 @@ namespace algo_project
             return count;
 
         }
-        
+
         private int Manhattan()
         {
             int count = 0;
