@@ -19,7 +19,8 @@ namespace algo_project
         int[,] intitialPazzle;
         Button[,] nums = new Button[3, 3];
         int moves, clks = 0;
-        public Form1(List<int[,]> puzzles, int[,] inti, int moves)
+        string sec;
+        public Form1(List<int[,]> puzzles, int[,] inti, int moves,double seconds)
         {
             solution = puzzles;
             intitialPazzle = new int[3, 3];
@@ -33,7 +34,10 @@ namespace algo_project
                   
                 }
             this.moves = moves;
-                InitializeComponent();
+            sec = Convert.ToInt32(seconds).ToString();
+            solution.Reverse();
+            InitializeComponent();
+           
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -85,9 +89,43 @@ namespace algo_project
             showGuiAsync();
         }
 
+        private void button11_Click(object sender, EventArgs e)
+        {
+            
+            int[,] i = solution[0];
+            solution.RemoveAt(0);
+            
+            
+            for (int j = 0; j < 3; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    if (i[j, k] == 0)
+                    {
+                        nums[j, k].Text = " ";
+                        nums[j, k].FlatAppearance.BorderColor = Color.Gray;
+                        nums[j, k].FlatStyle = FlatStyle.Flat;
+                        nums[j, k].FlatAppearance.BorderSize = 0;
+                    }
+                    else
+                    {
+                        nums[j, k].FlatAppearance.BorderColor = Color.Black;
+                        nums[j, k].FlatStyle = FlatStyle.Popup;
+
+                        nums[j, k].Text = i[j, k].ToString();
+                    }
+                }
+            }
+            if(solution.Count()==0)
+            {
+                MessageBox.Show("Solving time is " + sec + " seconds");
+                this.Close();
+            }
+        }
+
         private async Task showGuiAsync()
         {
-            solution.Reverse();
+            
             foreach (int[,] i in solution)
             { 
                 for (int j = 0; j < 3; j++)
@@ -112,6 +150,8 @@ namespace algo_project
                 }
                 await Task.Delay(500);
             }
+            MessageBox.Show("Solving time is " + sec +" seconds");
+            this.Close();
         }
     }
 }

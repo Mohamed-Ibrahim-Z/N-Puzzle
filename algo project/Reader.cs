@@ -123,7 +123,7 @@ namespace algo_project
                 Solver solver = new Solver(puzzle, n, DistanceFunction.MANHATTEN);
                 solver.Solve();
                 
-               // Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+                Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
                 Console.WriteLine();
             }
         }
