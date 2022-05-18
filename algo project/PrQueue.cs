@@ -109,10 +109,7 @@ namespace algo_project
             return count;
 
         }
-        private int LenearConflict()
-        {
-            
-        }
+
         private int Manhattan()
         {
             int count = 0;
