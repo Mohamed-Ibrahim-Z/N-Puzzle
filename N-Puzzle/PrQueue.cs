@@ -16,6 +16,7 @@ namespace algo_project
         public int level;
         public int size;
         public int hash;
+        public int[,] goal;
 
         public Node(int[,] d, int size, DistanceFunction distanceFunction)
         {
@@ -41,6 +42,7 @@ namespace algo_project
 
         private void InitBoard(int[,] d)
         {
+            goal = new int[size, size];
             data = new int[size, size];
             for (int i = 0; i < size; i++)
             {
@@ -51,7 +53,7 @@ namespace algo_project
                     {
                         zero = new Tuple<int, int>(i, j);
                     }
-
+                    goal[i, j] = i * size + j;
                 }
             }
         }
@@ -145,7 +147,23 @@ namespace algo_project
         {
             data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
             data[tile.Item1, tile.Item2] = 0;
-            hash = Solver.hashFunctionFor2DArr(data, size);
+            int hash = Solver.hashFunctionFor2DArr(data, size);
+            bool found = true;
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (data[i, j] != goal[i,j])
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+                if (!found)
+                    break;
+            }
+            if(found)
+                Console.WriteLine("Found");
             if (!Solver.closed.Contains(hash))
                 Solver.BFS.Enqueue(new Node(this, hash, 0));
             data[tile.Item1, tile.Item2] = data[zero.Item1, zero.Item2];

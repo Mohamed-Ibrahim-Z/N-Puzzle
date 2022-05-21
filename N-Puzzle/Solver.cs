@@ -132,8 +132,9 @@ namespace algo_project
                     break;
                 }
                 closed.Add(current.hash); // θ(1)
-                
+
                 current.getPossibleChildren(); // θ(S)
+                current = null;
 
             }
             return level;
