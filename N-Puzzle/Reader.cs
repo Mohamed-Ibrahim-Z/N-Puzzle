@@ -16,6 +16,7 @@ namespace algo_project
         DistanceFunction distanceFunction = DistanceFunction.MANHATTEN;
     public void ReadSampleTests()
      {
+            
             string path = "Sample Test/"; 
             Console.WriteLine("Choose if Solvable Or not");
             Console.WriteLine("1 -> for Solvable");
@@ -29,12 +30,15 @@ namespace algo_project
                         path += "Solvable Puzzles";
                         Console.WriteLine("1 -> for Manhatten");
                         Console.WriteLine("2 -> for Hamming");
+                        Console.WriteLine("3 -> for BFS");
                         choice = (char)Console.ReadLine()[0];
                         Console.WriteLine();
                         if (choice == '1')
                             distanceFunction = DistanceFunction.MANHATTEN;
                         else if (choice == '2')
                             distanceFunction = DistanceFunction.HAMMING;
+                        else if (choice == '3')
+                            distanceFunction = DistanceFunction.BFS;
                         break;
                     }
                 case '2':
@@ -68,24 +72,30 @@ namespace algo_project
                             path += "Manhattan Only";
                             Console.WriteLine("1 -> for Manhatten");
                             Console.WriteLine("2 -> for Hamming");
-                            choice = (char)Console.ReadLine()[0];
-                            Console.WriteLine();
-                            if (choice == '1')
-                                distanceFunction = DistanceFunction.MANHATTEN;
-                            else if (choice == '2')
-                                distanceFunction = DistanceFunction.HAMMING;                            
-                        }
-                        else if (choice == '2')
-                        {
-                            path += "Manhattan & Hamming";
-                            Console.WriteLine("1 -> for Manhatten");
-                            Console.WriteLine("2 -> for Hamming");
+                            Console.WriteLine("3 -> for BFS");
                             choice = (char)Console.ReadLine()[0];
                             Console.WriteLine();
                             if (choice == '1')
                                 distanceFunction = DistanceFunction.MANHATTEN;
                             else if (choice == '2')
                                 distanceFunction = DistanceFunction.HAMMING;
+                            else if (choice == '3')
+                                distanceFunction = DistanceFunction.BFS;                            
+                        }
+                        else if (choice == '2')
+                        {
+                            path += "Manhattan & Hamming";
+                            Console.WriteLine("1 -> for Manhatten");
+                            Console.WriteLine("2 -> for Hamming");
+                            Console.WriteLine("3 -> for BFS");
+                            choice = (char)Console.ReadLine()[0];
+                            Console.WriteLine();
+                            if (choice == '1')
+                                distanceFunction = DistanceFunction.MANHATTEN;
+                            else if (choice == '2')
+                                distanceFunction = DistanceFunction.HAMMING;
+                            else if (choice == '3')
+                                distanceFunction = DistanceFunction.BFS;
                         }
 
                         break;
@@ -131,8 +141,9 @@ namespace algo_project
                         puzzle[i, j] = int.Parse(line[j]);
                     }
                 }
+                
                 string[] s = file.Split('\\');
-
+               
                 if (s.Length > 1)
                 {
                     Console.WriteLine(s[1]);
@@ -141,10 +152,9 @@ namespace algo_project
                 {
                     Console.WriteLine(s[0]);
                 }
-
-                Solver solver = new Solver(puzzle, n, distanceFunction);
-                solver.Solve(); // O(E Log (V))
                 
+                Solver solver = new Solver(puzzle, n, distanceFunction);
+                    solver.Solve(); // O(E Log (V))
                 Console.WriteLine();
             }
         }

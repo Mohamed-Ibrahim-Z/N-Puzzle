@@ -8,7 +8,7 @@ namespace algo_project
 {
     public class Node
     {
-        DistanceFunction distanceFunction;
+        public DistanceFunction distanceFunction;
         Tuple<int, int> zero;
         public Node parent;
         public int[,] data;
@@ -89,8 +89,11 @@ namespace algo_project
         {
             if (distanceFunction == DistanceFunction.HAMMING)
                 return Hamming();
-            else
+            else if (distanceFunction == DistanceFunction.MANHATTEN)
                 return Manhattan();
+            else
+                return 0;
+            
         }
         private int Hamming()
         {
@@ -132,10 +135,23 @@ namespace algo_project
         {
             if (distanceFunction == DistanceFunction.HAMMING)
                 GetHammingChild(zero, tile);
-            else
+            else if (distanceFunction == DistanceFunction.MANHATTEN)
                 GetManhattanChild(zero, tile);
+            else
+                GetBFSChild(zero, tile);
         }
-        
+
+        private void GetBFSChild(Tuple<int, int> zero, Tuple<int, int> tile)
+        {
+            data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
+            data[tile.Item1, tile.Item2] = 0;
+            hash = Solver.hashFunctionFor2DArr(data, size);
+            if (!Solver.closed.Contains(hash))
+                Solver.BFS.Enqueue(new Node(this, hash, 0));
+            data[tile.Item1, tile.Item2] = data[zero.Item1, zero.Item2];
+            data[zero.Item1, zero.Item2] = 0;
+        }
+
         private void GetHammingChild(Tuple<int, int> zero, Tuple<int, int> tile)
         {
             data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
@@ -152,7 +168,8 @@ namespace algo_project
                 hash = Solver.hashFunctionFor2DArr(data, size);
                 if (!Solver.closed.Contains(hash))
                 {
-                   Solver.open.Enqueue(new Node(this, hash, cost  + 2));
+                   
+                    Solver.open.Enqueue(new Node(this, hash, cost  + 2));
                    
                 }
 
@@ -162,8 +179,11 @@ namespace algo_project
             {
 
                 hash = Solver.hashFunctionFor2DArr(data, size);
+
                 if (!Solver.closed.Contains(hash))
                 {
+
+                    
                     Solver.open.Enqueue(new Node(this, hash, cost ));
 
                 }
@@ -176,9 +196,10 @@ namespace algo_project
                 hash = Solver.hashFunctionFor2DArr(data, size);
                 if (!Solver.closed.Contains(hash))
                 {
+                    
+
 
                     Solver.open.Enqueue(new Node(this, hash, cost  + 1));
-
                 }
 
             }
@@ -194,8 +215,6 @@ namespace algo_project
             data[zero.Item1, zero.Item2] = data[tile.Item1, tile.Item2];
             int x = (data[tile.Item1, tile.Item2] - 1) / size;
             int y = (data[tile.Item1, tile.Item2] - 1) % size;
-
-
 
             int x1 = (data[zero.Item1, zero.Item2] - 1) / size;
             int y1 = (data[zero.Item1, zero.Item2] - 1) % size;
